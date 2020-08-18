@@ -1,20 +1,15 @@
 #include <Arduino.h>
+#include "environment.h"
+
 #include "wifi/wifi.h"
 
-const char* ssid = "SSID";
-const char* password = "PASSWORD";
-
-Wifi wifi(ssid, password);
+Wifi wifi(WIFI_SSID, WIFI_PASSWORD);
 
 void setup() {
   Serial.begin(115200);
-
-  Serial.println("\n\nMONICA");
-  Serial.println("======\n");
+  Serial.println("\n\nMONICA v" + String(VERSION));
 
   wifi.connect();
 }
 
-void loop() {
-  Serial.println(wifi.isConnected());
-}
+void loop() { }

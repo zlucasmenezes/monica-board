@@ -7,8 +7,7 @@ Wifi::Wifi(const char* ssid, const char* password){
 };
 
 void Wifi::connect(){
-  Serial.println("SSID: " + String(ssid));
-  Serial.print("Connecting ");
+  Serial.print("Connecting to " + String(ssid) + " ");
 
   WiFi.begin(ssid, password);
   while (!this->isConnected()) {
