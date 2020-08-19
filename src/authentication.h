@@ -1,0 +1,2 @@
+#define BOARD "5f31c8b4c999e017354ce3c9"
+#define BOARD_PASSWORD "o$&47YbhP0EuBeKT"

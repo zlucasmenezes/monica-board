@@ -1,0 +1,43 @@
+#include "board.h"
+
+Board::Board(const char* host, int port) {
+  this->host = host;
+  this->port = port;
+  this->authenticated = false;
+}
+
+void Board::login(String board, String password) {
+
+  HTTPClient http;
+  http.begin(
+    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/auth"
+  );
+  http.addHeader("Content-Type", "application/json");
+
+  String body = "{\"board\":\"" + board + "\",\"password\":\"" + password + "\"}";
+
+  int httpResponseCode = http.POST(body);
+  
+  if (httpResponseCode > 0) {
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, http.getString());
+    
+    String message = doc["message"];
+    String boardId = doc["data"]["boardId"];
+    String token = doc["data"]["token"];
+
+    if (token != "null") {
+      this->board = boardId;
+      this->token = token;
+      this->authenticated = true;
+    }
+
+    Serial.println(message);
+  }
+
+  http.end();
+}
+
+bool Board::isAuth() {
+  return this->authenticated;
+}

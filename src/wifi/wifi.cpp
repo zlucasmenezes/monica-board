@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include "wifi.h"
 
 Wifi::Wifi(const char* ssid, const char* password){
@@ -15,7 +14,8 @@ void Wifi::connect(){
     delay(500);
   }
 
-  Serial.println(" Connected");
+  Serial.print(" Connected: ");
+  Serial.println(WiFi.localIP());
 };
 
 boolean Wifi::isConnected(){
