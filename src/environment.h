@@ -1,4 +1,4 @@
-#define VERSION "0.0.1"
+#define VERSION "0.0.2"
 
 #define WIFI_SSID "SSID"
 #define WIFI_PASSWORD "PASSWORD"
