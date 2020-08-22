@@ -9,6 +9,10 @@
 #error "Please use an interface such as ESP8266 or ESP32"
 #endif
 
+struct Devices {
+  JsonArray sensors;
+};
+
 class Board{
   private:
     const char* host;
@@ -23,6 +27,6 @@ class Board{
     Board(const char* host, int port);
 
     void login(String board, String password);
-
     bool isAuth();
+    Devices getDevices();
 };

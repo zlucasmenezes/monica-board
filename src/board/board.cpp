@@ -41,3 +41,31 @@ void Board::login(String board, String password) {
 bool Board::isAuth() {
   return this->authenticated;
 }
+
+Devices Board::getDevices() {
+
+  HTTPClient http;
+  http.begin(
+    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/devices"
+  );
+  http.addHeader("Authorization", "Bearer " + this->token);
+
+  Devices devices;
+
+  JsonArray sensors;
+
+  int httpResponseCode = http.GET();
+
+    if (httpResponseCode > 0) {
+      String payload = http.getString();
+
+      DynamicJsonDocument doc(2048);
+      deserializeJson(doc, payload);
+
+      sensors = doc["data"]["sensors"].as<JsonArray>();
+      devices.sensors = sensors;
+  }
+
+  http.end();
+  return devices;
+}
