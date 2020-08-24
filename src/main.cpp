@@ -1,10 +1,10 @@
 #include <Arduino.h>
 #include "environment.h"
 #include "authentication.h"
+#include "header.h"
 
 #include "wifi/wifi.h"
 #include "board/board.h"
-#include "devices/sensor/sensor.h"
 
 Wifi wifi(WIFI_SSID, WIFI_PASSWORD);
 Board board(SERVER_HOST, SERVER_PORT);
@@ -40,8 +40,8 @@ void loop() {
   unsigned long currentMillis = millis();
 
   for (size_t i = 0; i < sensors.size(); i++) {
-    if((unsigned long)(currentMillis - sensors.at(i).previousMillis) >= sensors.at(i).pollTime) {
-      Serial.println(String(i) + " => " + String(sensors.at(i).getValue()));
+    if((unsigned long)(currentMillis - sensors.at(i).previousMillis) >= sensors.at(i).getPollTime()) {
+      board.insertSensorTSData(sensors.at(i), sensors.at(i).getValue());
       sensors.at(i).previousMillis = currentMillis;
     }
   }

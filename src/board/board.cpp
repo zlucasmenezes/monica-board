@@ -7,7 +7,6 @@ Board::Board(const char* host, int port) {
 }
 
 void Board::login(String board, String password) {
-
   HTTPClient http;
   http.begin(
     "http://" + (String)this->host + ":" + (String)this->port + "/api/board/auth"
@@ -43,7 +42,6 @@ bool Board::isAuth() {
 }
 
 Devices Board::getDevices() {
-
   HTTPClient http;
   http.begin(
     "http://" + (String)this->host + ":" + (String)this->port + "/api/board/devices"
@@ -69,3 +67,27 @@ Devices Board::getDevices() {
   http.end();
   return devices;
 }
+
+void Board::insertSensorTSData(Sensor sensor, int value) {
+  
+  HTTPClient http;
+  http.begin(
+    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/ts/" + sensor.getId()
+  );
+  http.addHeader("Authorization", "Bearer " + this->token);
+  http.addHeader("Content-Type", "application/json");
+
+  String body = "{\"value\":" + (String)value + "}";
+
+  int httpResponseCode = http.POST(body);
+
+  if (httpResponseCode > 0) {
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, http.getString());
+    
+    String message = doc["message"];
+    Serial.println(sensor.getId() + " => " + message);
+  }
+
+  http.end();
+};

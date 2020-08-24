@@ -6,13 +6,15 @@ class Sensor {
     int pin;
     String type;
     String input;
+    int pollTime;
 
     int getAnalogValue();
 
   public:
-    int pollTime;
     unsigned long previousMillis;
 
     Sensor(int pin, String type, String input, String sensor, int pollTime);
+    String getId();
+    int getPollTime();
     int getValue();
 };

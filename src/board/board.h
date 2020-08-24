@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
+#include "header.h"
 
 #if defined(ESP8266)
 #include <ESP8266HTTPClient.h>
@@ -29,4 +30,5 @@ class Board{
     void login(String board, String password);
     bool isAuth();
     Devices getDevices();
+    void insertSensorTSData(Sensor sensor, int value);
 };

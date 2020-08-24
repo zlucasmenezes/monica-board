@@ -11,6 +11,14 @@ Sensor::Sensor(int pin, String type, String input, String sensor, int pollTime) 
   pinMode(pin, INPUT);
 }
 
+String Sensor::getId() {
+  return this->sensor;
+}
+
+int Sensor::getPollTime() {
+  return this->pollTime;
+}
+
 int Sensor::getValue() {
   if (this->input == "Analog") {
     return this->getAnalogValue();
