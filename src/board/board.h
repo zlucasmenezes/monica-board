@@ -18,6 +18,7 @@ class Board{
   private:
     const char* host;
     int port;
+    int resolution;
 
     String board;
     String token;

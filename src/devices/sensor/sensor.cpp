@@ -6,7 +6,7 @@ Sensor::Sensor(int pin, String type, String input, String sensor, int pollTime) 
   this->input = input;
   this->sensor = sensor;
   this->pollTime = pollTime;
-  this->previousMillis = 0;
+  this->previousMillis = millis() - (unsigned long)pollTime;
 
   pinMode(pin, INPUT);
 }

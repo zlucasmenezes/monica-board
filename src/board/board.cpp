@@ -4,6 +4,12 @@ Board::Board(const char* host, int port) {
   this->host = host;
   this->port = port;
   this->authenticated = false;
+
+  #if defined(ESP32)
+  this->resolution = 4095;
+  #else
+  this->resolution = 1023;
+  #endif
 }
 
 void Board::login(String board, String password) {
@@ -77,17 +83,18 @@ void Board::insertSensorTSData(Sensor sensor, int value) {
   http.addHeader("Authorization", "Bearer " + this->token);
   http.addHeader("Content-Type", "application/json");
 
-  String body = "{\"value\":" + (String)value + "}";
+  String body = "{\"value\":" + (String)value + ", \"resolution\":" + (String)this->resolution + "}";
 
-  int httpResponseCode = http.POST(body);
+  http.POST(body);
+  Serial.println(sensor.getId() + " => ts data added");
 
-  if (httpResponseCode > 0) {
-    DynamicJsonDocument doc(2048);
-    deserializeJson(doc, http.getString());
+  // if (httpResponseCode > 0) {
+  //   DynamicJsonDocument doc(2048);
+  //   deserializeJson(doc, http.getString());
     
-    String message = doc["message"];
-    Serial.println(sensor.getId() + " => " + message);
-  }
+  //   String message = doc["message"];
+  //   Serial.println(sensor.getId() + " => " + message);
+  // }
 
   http.end();
 };
