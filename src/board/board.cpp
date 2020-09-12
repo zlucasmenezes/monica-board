@@ -85,15 +85,16 @@ void Board::insertSensorTSData(Sensor sensor, int value) {
 
   String body = "{\"value\":" + (String)value + ", \"resolution\":" + (String)this->resolution + "}";
 
-  int httpResponseCode = http.POST(body);
+  http.POST(body);
+  Serial.println(sensor.getId() + " => ts data added");
 
-  if (httpResponseCode > 0) {
-    DynamicJsonDocument doc(2048);
-    deserializeJson(doc, http.getString());
+  // if (httpResponseCode > 0) {
+  //   DynamicJsonDocument doc(2048);
+  //   deserializeJson(doc, http.getString());
     
-    String message = doc["message"];
-    Serial.println(sensor.getId() + " => " + message);
-  }
+  //   String message = doc["message"];
+  //   Serial.println(sensor.getId() + " => " + message);
+  // }
 
   http.end();
 };
