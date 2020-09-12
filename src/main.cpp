@@ -30,7 +30,7 @@ void setup() {
     int pin = v["pin"];
     int pollTime = v["pollTime"];
 
-    Serial.println(sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
+    Serial.println("SENSOR: " + sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
 
     sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
   }

@@ -78,23 +78,23 @@ void Board::insertSensorTSData(Sensor sensor, int value) {
   
   HTTPClient http;
   http.begin(
-    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/ts/" + sensor.getId()
+    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/ts/sensor/" + sensor.getId()
   );
   http.addHeader("Authorization", "Bearer " + this->token);
   http.addHeader("Content-Type", "application/json");
 
   String body = "{\"value\":" + (String)value + ", \"resolution\":" + (String)this->resolution + "}";
 
-  http.POST(body);
-  Serial.println(sensor.getId() + " => ts data added");
+  int httpResponseCode = http.POST(body);
+  // Serial.println("[SENSOR:" + sensor.getId() + "] => trying to insert ts data");
 
-  // if (httpResponseCode > 0) {
-  //   DynamicJsonDocument doc(2048);
-  //   deserializeJson(doc, http.getString());
+  if (httpResponseCode > 0) {
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, http.getString());
     
-  //   String message = doc["message"];
-  //   Serial.println(sensor.getId() + " => " + message);
-  // }
+    String message = doc["message"];
+    Serial.println("SENSOR: " + sensor.getId() + " => " + message);
+  }
 
   http.end();
 };
