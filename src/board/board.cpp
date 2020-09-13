@@ -57,6 +57,7 @@ Devices Board::getDevices() {
   Devices devices;
 
   JsonArray sensors;
+  JsonArray relays;
 
   int httpResponseCode = http.GET();
 
@@ -68,6 +69,9 @@ Devices Board::getDevices() {
 
       sensors = doc["data"]["sensors"].as<JsonArray>();
       devices.sensors = sensors;
+
+      relays = doc["data"]["relays"].as<JsonArray>();
+      devices.relays = relays;
   }
 
   http.end();

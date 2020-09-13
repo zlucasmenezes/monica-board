@@ -10,6 +10,7 @@ Wifi wifi(WIFI_SSID, WIFI_PASSWORD);
 Board board(SERVER_HOST, SERVER_PORT);
 
 std::vector<Sensor> sensors;
+std::vector<Relay> relays;
 
 void setup() {
   Serial.begin(115200);
@@ -33,6 +34,15 @@ void setup() {
     Serial.println("SENSOR: " + sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
 
     sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
+  }
+
+  for(JsonVariant v :  devices.relays) {
+    String relay = v["relay"];
+    int pin = v["pin"];
+
+    Serial.println("RELAY: " + relay + " => Pin: " + String(pin));
+
+    relays.emplace_back(Relay(pin, relay));
   }
 }
 

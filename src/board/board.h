@@ -12,6 +12,7 @@
 
 struct Devices {
   JsonArray sensors;
+  JsonArray relays;
 };
 
 class Board{
