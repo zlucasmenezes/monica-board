@@ -102,3 +102,11 @@ void Board::insertSensorTSData(Sensor sensor, int value) {
 
   http.end();
 };
+
+String Board::getId() {
+  return this->board;
+};
+
+String Board::getToken() {
+  return this->token;
+};

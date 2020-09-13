@@ -33,4 +33,6 @@ class Board{
     bool isAuth();
     Devices getDevices();
     void insertSensorTSData(Sensor sensor, int value);
+    String getId();
+    String getToken();
 };

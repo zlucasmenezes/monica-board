@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <SocketIoClient.h>
 #include "environment.h"
 #include "authentication.h"
 #include "header.h"
@@ -9,8 +10,15 @@
 Wifi wifi(WIFI_SSID, WIFI_PASSWORD);
 Board board(SERVER_HOST, SERVER_PORT);
 
+SocketIoClient io;
+
 std::vector<Sensor> sensors;
 std::vector<Relay> relays;
+
+void event(const char * payload, size_t length) {
+  Serial.printf("got message: %s\n", payload);
+  Serial.println(String(length));
+}
 
 void setup() {
   Serial.begin(115200);
@@ -44,9 +52,14 @@ void setup() {
 
     relays.emplace_back(Relay(pin, relay));
   }
+
+  io.begin(SERVER_HOST, SERVER_PORT, ("/socket.io/?transport=websocket&board=" + board.getToken()).c_str());
+  io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
 }
 
 void loop() {
+  io.loop();
+
   unsigned long currentMillis = millis();
 
   for (size_t i = 0; i < sensors.size(); i++) {
