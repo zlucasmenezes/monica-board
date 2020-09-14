@@ -10,3 +10,7 @@ Relay::Relay(int pin, String relay) {
 String Relay::getId() {
   return this->relay;
 }
+
+void Relay::update(bool value) {
+  digitalWrite(this->pin, value);
+}

@@ -8,4 +8,5 @@ class Relay {
   public:
     Relay(int pin, String relay);
     String getId();
+    void update(bool value);
 };

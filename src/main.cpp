@@ -15,9 +15,22 @@ SocketIoClient io;
 std::vector<Sensor> sensors;
 std::vector<Relay> relays;
 
-void event(const char * payload, size_t length) {
-  Serial.printf("got message: %s\n", payload);
-  Serial.println(String(length));
+void updateRelay(const char * payload, size_t length) {
+  DynamicJsonDocument doc(2048);
+  deserializeJson(doc, payload);
+    
+  String id = doc["relay"];
+  bool value = doc["value"];
+
+  for (size_t i = 0; i < relays.size(); i++) {
+    if (relays.at(i).getId() == id) {
+      relays.at(i).update(value);
+    }
+  }
+}
+
+void listenToBoardEvents(const char * payload, size_t length) {
+  io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
 }
 
 void setup() {
@@ -53,8 +66,12 @@ void setup() {
     relays.emplace_back(Relay(pin, relay));
   }
 
+  for (size_t i = 0; i < relays.size(); i++) {
+    io.on(relays.at(i).getId().c_str(), updateRelay);
+  }
+
+  io.on("user_connected", listenToBoardEvents);
   io.begin(SERVER_HOST, SERVER_PORT, ("/socket.io/?transport=websocket&board=" + board.getToken()).c_str());
-  io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
 }
 
 void loop() {
