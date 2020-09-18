@@ -70,7 +70,7 @@ void setup() {
     io.on(relays.at(i).getId().c_str(), updateRelay);
   }
 
-  io.on("user_connected", listenToBoardEvents);
+  io.on("board_connected", listenToBoardEvents);
   io.begin(SERVER_HOST, SERVER_PORT, ("/socket.io/?transport=websocket&board=" + board.getToken()).c_str());
 }
 
