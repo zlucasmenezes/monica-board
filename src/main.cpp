@@ -60,10 +60,11 @@ void setup() {
   for(JsonVariant v :  devices.relays) {
     String relay = v["relay"];
     int pin = v["pin"];
+    bool nc = v["nc"];
 
-    Serial.println("RELAY: " + relay + " => Pin: " + String(pin));
+    Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc);
 
-    relays.emplace_back(Relay(pin, relay));
+    relays.emplace_back(Relay(pin, relay, nc));
   }
 
   for (size_t i = 0; i < relays.size(); i++) {
