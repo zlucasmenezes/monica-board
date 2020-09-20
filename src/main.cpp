@@ -1,14 +1,17 @@
 #include <Arduino.h>
 #include <SocketIoClient.h>
+
 #include "environment.h"
 #include "authentication.h"
 #include "header.h"
 
 #include "wifi/wifi.h"
 #include "board/board.h"
+#include "file-system/file-system.h"
 
 Wifi wifi(WIFI_SSID, WIFI_PASSWORD);
 Board board(SERVER_HOST, SERVER_PORT);
+FileSystem fileSystem;
 
 SocketIoClient io;
 
@@ -23,8 +26,10 @@ void updateRelay(const char * payload, size_t length) {
   bool value = doc["value"];
 
   for (size_t i = 0; i < relays.size(); i++) {
-    if (relays.at(i).getId() == id) {
+    String relay = relays.at(i).getId();
+    if (relay == id) {
       relays.at(i).update(value);
+      fileSystem.setRelayValue(relay, value);
     }
   }
 }
@@ -41,6 +46,16 @@ void setup() {
 
   while(!board.isAuth()) {
     board.login(String(BOARD), String(BOARD_PASSWORD));
+  }
+
+  #if defined(ESP8266)
+  SPIFFS.begin();
+  #elif defined(ESP32)
+  SPIFFS.begin(true);
+  #endif
+
+  if (board.getId() != fileSystem.getBoard()) {
+    fileSystem.setBoard(board.getId());
   }
 
   Devices devices = board.getDevices();
@@ -65,6 +80,8 @@ void setup() {
     Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc);
 
     relays.emplace_back(Relay(pin, relay, nc));
+
+    fileSystem.getRelayValue(relay);
   }
 
   for (size_t i = 0; i < relays.size(); i++) {
