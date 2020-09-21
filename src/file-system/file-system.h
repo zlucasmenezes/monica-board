@@ -16,6 +16,6 @@ class FileSystem {
     String getBoard();
     void setBoard(String board);
 
-    bool getRelayValue(String relay);
-    void setRelayValue(String relay, bool value);
+    boolean getRelayValue(String relay);
+    void setRelayValue(String relay, boolean value);
 };

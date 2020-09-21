@@ -23,7 +23,7 @@ void updateRelay(const char * payload, size_t length) {
   deserializeJson(doc, payload);
     
   String id = doc["relay"];
-  bool value = doc["value"];
+  boolean value = doc["value"];
 
   for (size_t i = 0; i < relays.size(); i++) {
     String relay = relays.at(i).getId();
@@ -46,6 +46,7 @@ void setup() {
 
   while(!board.isAuth()) {
     board.login(String(BOARD), String(BOARD_PASSWORD));
+    delay(1000);
   }
 
   #if defined(ESP8266)
@@ -68,24 +69,25 @@ void setup() {
     int pollTime = v["pollTime"];
 
     Serial.println("SENSOR: " + sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
-
     sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
   }
 
   for(JsonVariant v :  devices.relays) {
     String relay = v["relay"];
     int pin = v["pin"];
-    bool nc = v["nc"];
+    boolean nc = v["nc"];
 
     Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc);
-
     relays.emplace_back(Relay(pin, relay, nc));
-
-    fileSystem.getRelayValue(relay);
   }
 
   for (size_t i = 0; i < relays.size(); i++) {
-    io.on(relays.at(i).getId().c_str(), updateRelay);
+    Relay relay = relays.at(i);
+    io.on(relay.getId().c_str(), updateRelay);
+
+    boolean value = fileSystem.getRelayValue(relay.getId());
+    board.insertRelayTSData(relay.getId(), value);
+    relay.update(value);
   }
 
   io.on("board_connected", listenToBoardEvents);

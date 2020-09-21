@@ -1,6 +1,6 @@
 #include "relay.h"
 
-Relay::Relay(int pin, String relay, bool nc) {
+Relay::Relay(int pin, String relay, boolean nc) {
   this->pin = pin;
   this->relay = relay;
   this->nc = nc;
@@ -12,7 +12,7 @@ String Relay::getId() {
   return this->relay;
 }
 
-void Relay::update(bool value) {
+void Relay::update(boolean value) {
   if(this->nc) {
     digitalWrite(this->pin, !value);
   } else {

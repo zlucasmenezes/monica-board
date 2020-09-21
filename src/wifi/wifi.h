@@ -17,5 +17,5 @@ class Wifi{
     Wifi(const char* ssid, const char* password);
 
     void connect();
-    bool isConnected();
+    boolean isConnected();
 };

@@ -24,15 +24,16 @@ class Board{
     String board;
     String token;
 
-    bool authenticated;
+    boolean authenticated;
 
   public:
     Board(const char* host, int port);
 
     void login(String board, String password);
-    bool isAuth();
+    boolean isAuth();
     Devices getDevices();
     void insertSensorTSData(Sensor sensor, int value);
+    void insertRelayTSData(String relay, boolean value);
     String getId();
     String getToken();
 };

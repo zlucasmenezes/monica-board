@@ -43,7 +43,7 @@ void Board::login(String board, String password) {
   http.end();
 }
 
-bool Board::isAuth() {
+boolean Board::isAuth() {
   return this->authenticated;
 }
 
@@ -98,6 +98,30 @@ void Board::insertSensorTSData(Sensor sensor, int value) {
     
     String message = doc["message"];
     Serial.println("SENSOR: " + sensor.getId() + " => " + message);
+  }
+
+  http.end();
+};
+
+void Board::insertRelayTSData(String relay, boolean value) {
+  
+  HTTPClient http;
+  http.begin(
+    "http://" + (String)this->host + ":" + (String)this->port + "/api/board/ts/relay/" + relay
+  );
+  http.addHeader("Authorization", "Bearer " + this->token);
+  http.addHeader("Content-Type", "application/json");
+
+  String body = "{\"value\":" + (String)value + "}";
+
+  int httpResponseCode = http.POST(body);
+
+  if (httpResponseCode > 0) {
+    DynamicJsonDocument doc(2048);
+    deserializeJson(doc, http.getString());
+    
+    String message = doc["message"];
+    Serial.println("RELAY: " + relay + " => " + message);
   }
 
   http.end();

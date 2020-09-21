@@ -4,10 +4,10 @@ class Relay {
   private:
     String relay;
     int pin;
-    bool nc;
+    boolean nc;
 
   public:
-    Relay(int pin, String relay, bool nc);
+    Relay(int pin, String relay, boolean nc);
     String getId();
-    void update(bool value);
+    void update(boolean value);
 };

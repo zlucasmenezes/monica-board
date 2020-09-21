@@ -10,7 +10,7 @@ void Wifi::connect(){
 
   WiFi.begin(ssid, password);
   while (!this->isConnected()) {
-    Serial.print(".");
+    Serial.print("▰");
     delay(500);
   }
 
