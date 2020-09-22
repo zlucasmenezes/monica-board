@@ -1,11 +1,13 @@
 #include "relay.h"
 
-Relay::Relay(int pin, String relay, boolean nc) {
+Relay::Relay(int pin, String relay, boolean nc, int button) {
   this->pin = pin;
   this->relay = relay;
   this->nc = nc;
+  this->button = button;
 
   pinMode(pin, OUTPUT);
+  pinMode(button, INPUT);
 }
 
 String Relay::getId() {

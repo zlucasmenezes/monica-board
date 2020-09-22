@@ -76,9 +76,10 @@ void setup() {
     String relay = v["relay"];
     int pin = v["pin"];
     boolean nc = v["nc"];
+    int button = v["button"];
 
-    Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc);
-    relays.emplace_back(Relay(pin, relay, nc));
+    Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc + " | Button: " + button);
+    relays.emplace_back(Relay(pin, relay, nc, button));
   }
 
   for (size_t i = 0; i < relays.size(); i++) {
