@@ -6,16 +6,17 @@
 #include <SPIFFS.h>
 #endif
 
-class FileSystem {
-  private:
+class FileSystem
+{
+private:
   DynamicJsonDocument getRelayJSON();
 
-  public:
-    FileSystem();
+public:
+  FileSystem();
 
-    String getBoard();
-    void setBoard(String board);
+  String getBoard();
+  void setBoard(String board);
 
-    boolean getRelayValue(String relay);
-    void setRelayValue(String relay, boolean value);
+  boolean getRelayValue(String relay);
+  void setRelayValue(String relay, boolean value);
 };

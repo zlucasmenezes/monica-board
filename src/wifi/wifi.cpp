@@ -1,15 +1,18 @@
 #include "wifi.h"
 
-Wifi::Wifi(const char* ssid, const char* password){
+Wifi::Wifi(const char *ssid, const char *password)
+{
   this->ssid = ssid;
   this->password = password;
 };
 
-void Wifi::connect(){
+void Wifi::connect()
+{
   Serial.print("Connecting to " + String(ssid) + " ");
 
   WiFi.begin(ssid, password);
-  while (!this->isConnected()) {
+  while (!this->isConnected())
+  {
     Serial.print("▰");
     delay(500);
   }
@@ -18,6 +21,7 @@ void Wifi::connect(){
   Serial.println(WiFi.localIP());
 };
 
-boolean Wifi::isConnected(){
+boolean Wifi::isConnected()
+{
   return WiFi.status() == WL_CONNECTED;
 };

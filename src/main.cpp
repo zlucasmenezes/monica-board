@@ -18,50 +18,58 @@ SocketIoClient io;
 std::vector<Sensor> sensors;
 std::vector<Relay> relays;
 
-void updateRelay(const char * payload, size_t length) {
+void updateRelay(const char *payload, size_t length)
+{
   DynamicJsonDocument doc(2048);
   deserializeJson(doc, payload);
-    
+
   String id = doc["relay"];
   boolean value = doc["value"];
 
-  for (size_t i = 0; i < relays.size(); i++) {
+  for (size_t i = 0; i < relays.size(); i++)
+  {
     String relay = relays.at(i).getId();
-    if (relay == id) {
+    if (relay == id)
+    {
       relays.at(i).update(value);
       fileSystem.setRelayValue(relay, value);
     }
   }
 }
 
-void listenToBoardEvents(const char * payload, size_t length) {
+void listenToBoardEvents(const char *payload, size_t length)
+{
   io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
 }
 
-void setup() {
+void setup()
+{
   Serial.begin(115200);
   Serial.println("\n\nMONICA v" + String(VERSION));
 
   wifi.connect();
 
-  while(!board.isAuth()) {
+  while (!board.isAuth())
+  {
     board.login(String(BOARD), String(BOARD_PASSWORD));
     delay(1000);
   }
 
-  #if defined(ESP8266)
+#if defined(ESP8266)
   SPIFFS.begin();
-  #elif defined(ESP32)
+#elif defined(ESP32)
   SPIFFS.begin(true);
-  #endif
+#endif
 
-  if (board.getId() != fileSystem.getBoard()) {
+  if (board.getId() != fileSystem.getBoard())
+  {
     fileSystem.setBoard(board.getId());
   }
 
   Devices devices = board.getDevices();
 
-  for(JsonVariant v :  devices.sensors) {
+  for (JsonVariant v : devices.sensors)
+  {
     String sensor = v["sensor"];
     String type = v["type"];
     String input = v["input"];
@@ -72,7 +80,8 @@ void setup() {
     sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
   }
 
-  for(JsonVariant v :  devices.relays) {
+  for (JsonVariant v : devices.relays)
+  {
     String relay = v["relay"];
     int pin = v["pin"];
     boolean nc = v["nc"];
@@ -82,7 +91,8 @@ void setup() {
     relays.emplace_back(Relay(pin, relay, nc, button));
   }
 
-  for (size_t i = 0; i < relays.size(); i++) {
+  for (size_t i = 0; i < relays.size(); i++)
+  {
     Relay relay = relays.at(i);
     io.on(relay.getId().c_str(), updateRelay);
 
@@ -95,13 +105,16 @@ void setup() {
   io.begin(SERVER_HOST, SERVER_PORT, ("/socket.io/?transport=websocket&board=" + board.getToken()).c_str());
 }
 
-void loop() {
+void loop()
+{
   io.loop();
 
   unsigned long currentMillis = millis();
 
-  for (size_t i = 0; i < sensors.size(); i++) {
-    if((unsigned long)(currentMillis - sensors.at(i).previousMillis) >= sensors.at(i).getPollTime()) {
+  for (size_t i = 0; i < sensors.size(); i++)
+  {
+    if ((unsigned long)(currentMillis - sensors.at(i).previousMillis) >= sensors.at(i).getPollTime())
+    {
       board.insertSensorTSData(sensors.at(i), sensors.at(i).getValue());
       sensors.at(i).previousMillis = currentMillis;
     }

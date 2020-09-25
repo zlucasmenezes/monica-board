@@ -1,8 +1,9 @@
 #include "file-system.h"
 
-FileSystem::FileSystem() { }
+FileSystem::FileSystem() {}
 
-String FileSystem::getBoard() {
+String FileSystem::getBoard()
+{
   File file = SPIFFS.open("/board.txt", "r");
   String board = file.readStringUntil('\r');
 
@@ -11,20 +12,23 @@ String FileSystem::getBoard() {
   return board;
 }
 
-void FileSystem::setBoard(String board) {
+void FileSystem::setBoard(String board)
+{
   Serial.println("Formatting SPIFFS");
   SPIFFS.format();
 
   File file = SPIFFS.open("/board.txt", "w+");
 
-  if(file){
+  if (file)
+  {
     file.println(board);
   }
 
   file.close();
 }
 
-boolean FileSystem::getRelayValue(String relay) {
+boolean FileSystem::getRelayValue(String relay)
+{
   DynamicJsonDocument doc = this->getRelayJSON();
 
   boolean value = doc[relay];
@@ -32,12 +36,14 @@ boolean FileSystem::getRelayValue(String relay) {
   return value;
 }
 
-void FileSystem::setRelayValue(String relay, boolean value) {
+void FileSystem::setRelayValue(String relay, boolean value)
+{
   DynamicJsonDocument doc = this->getRelayJSON();
 
   File file = SPIFFS.open("/relays.json", "w+");
 
-  if(file) {
+  if (file)
+  {
     doc[relay] = value;
 
     String output;
@@ -49,7 +55,8 @@ void FileSystem::setRelayValue(String relay, boolean value) {
   file.close();
 }
 
-DynamicJsonDocument FileSystem::getRelayJSON() {
+DynamicJsonDocument FileSystem::getRelayJSON()
+{
   File file = SPIFFS.open("/relays.json", "r");
 
   String content = file.readStringUntil('\r');

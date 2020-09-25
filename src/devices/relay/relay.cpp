@@ -1,6 +1,7 @@
 #include "relay.h"
 
-Relay::Relay(int pin, String relay, boolean nc, int button) {
+Relay::Relay(int pin, String relay, boolean nc, int button)
+{
   this->pin = pin;
   this->relay = relay;
   this->nc = nc;
@@ -10,14 +11,19 @@ Relay::Relay(int pin, String relay, boolean nc, int button) {
   pinMode(button, INPUT);
 }
 
-String Relay::getId() {
+String Relay::getId()
+{
   return this->relay;
 }
 
-void Relay::update(boolean value) {
-  if(this->nc) {
+void Relay::update(boolean value)
+{
+  if (this->nc)
+  {
     digitalWrite(this->pin, !value);
-  } else {
+  }
+  else
+  {
     digitalWrite(this->pin, value);
-  }  
+  }
 }
