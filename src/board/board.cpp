@@ -15,6 +15,7 @@ Board::Board(const char *host, int port)
 
 void Board::login(String board, String password)
 {
+  Serial.println("[BOARD] Logging in");
   HTTPClient http;
   http.begin(
       "http://" + (String)this->host + ":" + (String)this->port + "/api/board/auth");
@@ -40,7 +41,7 @@ void Board::login(String board, String password)
       this->authenticated = true;
     }
 
-    Serial.println(message);
+    Serial.println("[BOARD] " + message);
   }
 
   http.end();
@@ -95,7 +96,6 @@ void Board::insertSensorTSData(Sensor sensor, int value)
   String body = "{\"value\":" + (String)value + ", \"resolution\":" + (String)this->resolution + "}";
 
   int httpResponseCode = http.POST(body);
-  // Serial.println("[SENSOR:" + sensor.getId() + "] => trying to insert ts data");
 
   if (httpResponseCode > 0)
   {
@@ -103,7 +103,7 @@ void Board::insertSensorTSData(Sensor sensor, int value)
     deserializeJson(doc, http.getString());
 
     String message = doc["message"];
-    Serial.println("SENSOR: " + sensor.getId() + " => " + message);
+    Serial.println("[BOARD] Sensor: " + sensor.getId() + " => " + message);
   }
 
   http.end();
@@ -128,7 +128,7 @@ void Board::insertRelayTSData(String relay, boolean value)
     deserializeJson(doc, http.getString());
 
     String message = doc["message"];
-    Serial.println("RELAY: " + relay + " => " + message);
+    Serial.println("[BOARD] Relay: " + relay + " => " + message);
   }
 
   http.end();

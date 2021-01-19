@@ -14,7 +14,7 @@ String FileSystem::getBoard()
 
 void FileSystem::setBoard(String board)
 {
-  Serial.println("Formatting SPIFFS");
+  Serial.println("[FILE SYSTEM] Formatting SPIFFS");
   SPIFFS.format();
 
   File file = SPIFFS.open("/board.txt", "w+");

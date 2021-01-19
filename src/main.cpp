@@ -18,6 +18,11 @@ SocketIoClient io;
 std::vector<Sensor> sensors;
 std::vector<Relay> relays;
 
+void joinRoom(const char *payload, size_t length)
+{
+  io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
+}
+
 void updateRelay(const char *payload, size_t length)
 {
   DynamicJsonDocument doc(2048);
@@ -37,9 +42,46 @@ void updateRelay(const char *payload, size_t length)
   }
 }
 
-void listenToBoardEvents(const char *payload, size_t length)
+void setupDevices(const char *payload, size_t length)
 {
-  io.emit("join_room", ("\"board:" + board.getId() + "\"").c_str());
+  Serial.println("[MAIN] Setting up devices");
+  Devices devices = board.getDevices();
+
+  sensors.clear();
+  relays.clear();
+
+  for (JsonVariant v : devices.sensors)
+  {
+    String sensor = v["sensor"];
+    String type = v["type"];
+    String input = v["input"];
+    int pin = v["pin"];
+    int pollTime = v["pollTime"];
+
+    Serial.println("[MAIN] Sensor: " + sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
+    sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
+  }
+
+  for (JsonVariant v : devices.relays)
+  {
+    String relay = v["relay"];
+    int pin = v["pin"];
+    boolean nc = v["nc"];
+    int button = v["button"];
+
+    Serial.println("[MAIN] Relay: " + relay + " => Pin: " + String(pin) + " | NC: " + nc + " | Button: " + button);
+    relays.emplace_back(Relay(pin, relay, nc, button));
+  }
+
+  for (size_t i = 0; i < relays.size(); i++)
+  {
+    Relay relay = relays.at(i);
+    io.on(relay.getId().c_str(), updateRelay);
+
+    boolean value = fileSystem.getRelayValue(relay.getId());
+    board.insertRelayTSData(relay.getId(), value);
+    relay.update(value);
+  }
 }
 
 void setup()
@@ -66,42 +108,10 @@ void setup()
     fileSystem.setBoard(board.getId());
   }
 
-  Devices devices = board.getDevices();
+  setupDevices(NULL, 0);
 
-  for (JsonVariant v : devices.sensors)
-  {
-    String sensor = v["sensor"];
-    String type = v["type"];
-    String input = v["input"];
-    int pin = v["pin"];
-    int pollTime = v["pollTime"];
-
-    Serial.println("SENSOR: " + sensor + " => Type: " + type + " | Input: " + input + " | Pin: " + String(pin) + " | Poll Time: " + String(pollTime));
-    sensors.emplace_back(Sensor(pin, type, input, sensor, pollTime));
-  }
-
-  for (JsonVariant v : devices.relays)
-  {
-    String relay = v["relay"];
-    int pin = v["pin"];
-    boolean nc = v["nc"];
-    int button = v["button"];
-
-    Serial.println("RELAY: " + relay + " => Pin: " + String(pin) + " | NC: " + nc + " | Button: " + button);
-    relays.emplace_back(Relay(pin, relay, nc, button));
-  }
-
-  for (size_t i = 0; i < relays.size(); i++)
-  {
-    Relay relay = relays.at(i);
-    io.on(relay.getId().c_str(), updateRelay);
-
-    boolean value = fileSystem.getRelayValue(relay.getId());
-    board.insertRelayTSData(relay.getId(), value);
-    relay.update(value);
-  }
-
-  io.on("board_connected", listenToBoardEvents);
+  io.on("board_connected", joinRoom);
+  io.on("update_devices", setupDevices);
   io.begin(SERVER_HOST, SERVER_PORT, ("/socket.io/?transport=websocket&board=" + board.getToken()).c_str());
 }
 
